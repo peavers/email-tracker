@@ -4,15 +4,17 @@ import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
 import com.google.api.services.gmail.model.MessagePart;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -24,16 +26,21 @@ public class GmailServiceImpl implements GmailService {
   private final Gmail client;
 
   @Override
-  public void getEmails() throws IOException {
+  public Map<String, String> getContent() throws IOException {
     final ListMessagesResponse messagesResponse = client.users().messages().list(USER_ID).execute();
     final List<Message> messages = messagesResponse.getMessages();
-    final List<String> content = new LinkedList<>();
+    final Map<String, String> content = new LinkedHashMap<>();
 
     for (final Message message : messages) {
-      content.add(getContent(client.users().messages().get(USER_ID, message.getId()).execute()));
+      final Message remoteMessage =
+        client.users().messages().get(USER_ID, message.getId()).execute();
+
+      content.put(remoteMessage.getId(), getContent(remoteMessage));
     }
 
     log.info("Content size: {}", content.size());
+
+    return content;
   }
 
   private String getContent(final Message message) {
@@ -46,7 +53,7 @@ public class GmailServiceImpl implements GmailService {
   }
 
   private void getPlainTextFromMessageParts(
-      final List<MessagePart> messageParts, final StringBuilder stringBuilder) {
+    final List<MessagePart> messageParts, final StringBuilder stringBuilder) {
     if (messageParts == null) {
       return;
     }

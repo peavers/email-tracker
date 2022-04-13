@@ -1,7 +1,6 @@
 plugins {
   id 'org.springframework.boot' version '2.6.6'
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-  id 'com.diffplug.spotless' version '6.4.2'
   id 'java'
 }
 
@@ -32,13 +31,6 @@ dependencies {
   annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
   annotationProcessor 'org.projectlombok:lombok'
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-
-spotless {
-  java {
-    removeUnusedImports()
-    googleJavaFormat()
-  }
 }
 
 tasks.named('test') {

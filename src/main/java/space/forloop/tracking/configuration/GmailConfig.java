@@ -12,15 +12,16 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
-import java.io.*;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import space.forloop.tracking.properties.AppProperties;
 import space.forloop.tracking.services.GmailServiceImpl;
+
+import java.io.*;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -37,18 +38,18 @@ public class GmailConfig {
     final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
     return new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-        .setApplicationName(appProperties.applicationName())
-        .build();
+      .setApplicationName(appProperties.applicationName())
+      .build();
   }
 
   private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
 
     final GoogleAuthorizationCodeFlow flow =
-        new GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, getGoogleClientSecrets(), SCOPES)
-            .setDataStoreFactory(new FileDataStoreFactory(new File(appProperties.tokenDirectory())))
-            .setAccessType("offline")
-            .build();
+      new GoogleAuthorizationCodeFlow.Builder(
+        HTTP_TRANSPORT, JSON_FACTORY, getGoogleClientSecrets(), SCOPES)
+        .setDataStoreFactory(new FileDataStoreFactory(new File(appProperties.tokenDirectory())))
+        .setAccessType("offline")
+        .build();
 
     final LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
 
@@ -58,7 +59,7 @@ public class GmailConfig {
   private GoogleClientSecrets getGoogleClientSecrets() throws IOException {
 
     final InputStream inputStream =
-        GmailServiceImpl.class.getResourceAsStream(appProperties.credentials());
+      GmailServiceImpl.class.getResourceAsStream(appProperties.credentials());
 
     if (inputStream == null) {
       throw new FileNotFoundException("Resource not found: " + appProperties.credentials());
