@@ -12,16 +12,15 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
+import java.io.*;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import space.forloop.tracking.properties.AppProperties;
 import space.forloop.tracking.services.GmailServiceImpl;
-
-import java.io.*;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
