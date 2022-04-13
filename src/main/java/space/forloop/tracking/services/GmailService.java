@@ -1,10 +1,13 @@
 package space.forloop.tracking.services;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Map;
+import com.google.api.services.gmail.model.Message;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface GmailService {
 
-  Map<String, String> getContent() throws GeneralSecurityException, IOException;
+  Optional<Message> getMessage(final String messageId);
+
+  List<Message> getMessages();
 }

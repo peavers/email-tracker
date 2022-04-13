@@ -5,10 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import space.forloop.tracking.services.GmailService;
+import space.forloop.tracking.services.EmailContentService;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.Map;
 
 @Slf4j
@@ -16,15 +14,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class StartListener {
 
-  private final GmailService gmailService;
+  private final EmailContentService emailContentService;
 
   @EventListener(ApplicationReadyEvent.class)
   public void applicationReady() {
-    try {
-      // TODO: Find something useful to do with this...
-      final Map<String, String> content = gmailService.getContent();
-    } catch (final GeneralSecurityException | IOException e) {
-      log.error("Error fetching emails: {}", e.getMessage(), e);
-    }
+    final Map<String, String> content = emailContentService.getContent();
+
+    content.values().forEach(log::info);
   }
 }

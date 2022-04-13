@@ -1,20 +1,15 @@
 package space.forloop.tracking.services;
 
 import com.google.api.services.gmail.Gmail;
-import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
-import com.google.api.services.gmail.model.MessagePart;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -26,46 +21,24 @@ public class GmailServiceImpl implements GmailService {
   private final Gmail client;
 
   @Override
-  public Map<String, String> getContent() throws IOException {
-    final ListMessagesResponse messagesResponse = client.users().messages().list(USER_ID).execute();
-    final List<Message> messages = messagesResponse.getMessages();
-    final Map<String, String> content = new LinkedHashMap<>();
-
-    for (final Message message : messages) {
-      final Message remoteMessage =
-        client.users().messages().get(USER_ID, message.getId()).execute();
-
-      content.put(remoteMessage.getId(), getContent(remoteMessage));
+  public Optional<Message> getMessage(final String messageId) {
+    try {
+      return Optional.of(client.users().messages().get(USER_ID, messageId).execute());
+    } catch (final IOException e) {
+      log.error("Error getting message {}", e.getMessage(), e);
     }
 
-    log.info("Content size: {}", content.size());
-
-    return content;
+    return Optional.empty();
   }
 
-  private String getContent(final Message message) {
-    final StringBuilder stringBuilder = new StringBuilder();
-    getPlainTextFromMessageParts(message.getPayload().getParts(), stringBuilder);
-
-    final byte[] bodyBytes = Base64.decodeBase64(stringBuilder.toString());
-
-    return new String(bodyBytes, StandardCharsets.UTF_8);
-  }
-
-  private void getPlainTextFromMessageParts(
-    final List<MessagePart> messageParts, final StringBuilder stringBuilder) {
-    if (messageParts == null) {
-      return;
+  @Override
+  public List<Message> getMessages() {
+    try {
+      return client.users().messages().list(USER_ID).execute().getMessages();
+    } catch (final IOException e) {
+      log.error("Error getting messages {}", e.getMessage(), e);
     }
 
-    for (final MessagePart messagePart : messageParts) {
-      if (messagePart.getMimeType().equals(MediaType.TEXT_PLAIN_VALUE)) {
-        stringBuilder.append(messagePart.getBody().getData());
-      }
-
-      if (messagePart.getParts() != null) {
-        getPlainTextFromMessageParts(messagePart.getParts(), stringBuilder);
-      }
-    }
+    return new ArrayList<>();
   }
 }
