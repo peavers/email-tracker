@@ -1,0 +1,46 @@
+plugins {
+  id 'org.springframework.boot' version '2.6.6'
+  id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+  id 'com.diffplug.spotless' version '6.4.2'
+  id 'java'
+}
+
+group = 'space.forloop'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+  compileOnly {
+    extendsFrom annotationProcessor
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation 'org.springframework.boot:spring-boot-starter-web'
+
+  // Gmail
+  implementation 'com.google.api-client:google-api-client:1.33.4'
+  implementation 'com.google.oauth-client:google-oauth-client-jetty:1.33.2'
+  implementation 'com.google.apis:google-api-services-gmail:v1-rev20220404-1.32.1'
+
+  compileOnly 'org.projectlombok:lombok'
+  developmentOnly 'org.springframework.boot:spring-boot-devtools'
+  annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+  annotationProcessor 'org.projectlombok:lombok'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+spotless {
+  java {
+    removeUnusedImports()
+    googleJavaFormat()
+  }
+}
+
+tasks.named('test') {
+  useJUnitPlatform()
+}

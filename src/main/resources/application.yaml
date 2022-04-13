@@ -1,0 +1,4 @@
+application:
+  application-name: "Email Tracker"
+  token-directory: "tokens"
+  credentials: "/credentials.json"
