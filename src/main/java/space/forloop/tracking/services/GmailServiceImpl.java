@@ -2,6 +2,7 @@ package space.forloop.tracking.services;
 
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Message;
+import com.google.api.services.gmail.model.MessagePartBody;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,5 +41,10 @@ public class GmailServiceImpl implements GmailService {
     }
 
     return new ArrayList<>();
+  }
+
+  @Override
+  public MessagePartBody getAttachment(final String messageId, final String attachmentId) throws IOException {
+    return client.users().messages().attachments().get(USER_ID, messageId, attachmentId).execute();
   }
 }
